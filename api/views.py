@@ -1,22 +1,21 @@
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import authenticate
-
+from rest_framework import generics
 
 from django.contrib.auth.models import User
 
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
-from .mixins import CreateOnlyMixin, ListOnlyMixin
 
 
-class UserViewSet(ListOnlyMixin, viewsets.ModelViewSet):
+class UserViewSet(generics.ListAPIView):
     queryset = User.objects.all().order_by('id')
     serializer_class = UserSerializer
 
 
 
-class RegisterView(CreateOnlyMixin, viewsets.ViewSet):
+class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     queryset = User.objects.all()
 
@@ -37,9 +36,8 @@ class RegisterView(CreateOnlyMixin, viewsets.ViewSet):
         )
 
 
-class LoginViewSet(CreateOnlyMixin, viewsets.ViewSet):
+class LoginViewSet(generics.CreateAPIView):
     serializer_class = LoginSerializer
-    queryset = User.objects.all()
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
