@@ -3,11 +3,12 @@ from pytest_factoryboy import register
 import pytest
 
 from rest_framework.test import APIClient
+from rest_framework.authtoken.models import Token
 
 from django.core import serializers
 from django.contrib.auth.models import User
 
-from . import NUM_OF_TEST_USERS, REGISTER_URL
+from . import NUM_OF_TEST_USERS, REGISTER_URL, LOGIN_URL
 
 class UserFactory(factory.Factory):
     class Meta:
@@ -44,6 +45,23 @@ def register_assert(test_client, data, expected_code):
 
     assert(response.status_code == expected_code)
 
+
+def get_token(test_client, user):
+    login_json = {}
+
+    if user.get('username'):
+        login_json['username'] = user['username']
+
+    if user.get('password'):
+        login_json['password'] = user['password']
+
+    response = test_client.post(
+        LOGIN_URL,
+        login_json
+    )
+
+    return response.data.get('token')
+
 # Create your tests here.
 @pytest.fixture()
 def test_client():
@@ -53,15 +71,18 @@ def test_client():
 
 
 @pytest.fixture()
-def users(db):
+def users():
     users = []
     for i in range(NUM_OF_TEST_USERS):
         user = new_user_json()
-        User.objects.create(
+        user_obj = User.objects.create(
             username=user['username'],
             email=user['email'],
-            password=user['password']
         )
+        user_obj.set_password(user['password'])
+        user_obj.save()
+        token = Token.objects.create(user=user_obj)
+        token.save()
         users.append(user)
     
     yield users
