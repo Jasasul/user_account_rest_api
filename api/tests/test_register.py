@@ -13,7 +13,7 @@ def test_register(test_client, users, user):
 
 @pytest.mark.django_db
 def test_register_duplicate_username(test_client, users): 
-    register_assert(test_client, users[0], 400)
+    register_assert(test_client, new_user_json(users[0]), 400)
 
 
 @pytest.mark.django_db

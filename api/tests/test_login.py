@@ -1,13 +1,13 @@
 import pytest
 
-from .conftest import get_token
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
+
+from .conftest import get_token, register_user
 
 
 @pytest.mark.django_db
-def test_login(test_client, users):
-    assert(get_token(test_client, users[0]))
+def test_login(test_client, user_token):
+    token = get_token(test_client, user_token['user'])
+    assert(token)
 
 
 def test_login_no_username(test_client, user):

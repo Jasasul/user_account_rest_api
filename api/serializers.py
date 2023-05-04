@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
 
 MAX_USERNAME_LENGTH = 50
@@ -23,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 
-class RegisterSerializer(serializers.Serializer):
+class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[
             UniqueValidator(queryset=User.objects.all()),
@@ -45,15 +46,51 @@ class RegisterSerializer(serializers.Serializer):
     class Meta():
         model = User
         fields = ('username', 'email', 'password')
-
+    
 
     def create(self, validated_data):
-        email = validated_data.get('email')
-        user = User.objects.create(
-            username=validated_data['username'],
-            email=email if email else ''
-        )
-        user.set_password(validated_data['password'])
-        user.save()
+        validated_data['password'] = make_password(validated_data.get('password'))
+        return super(RegisterSerializer, self).create(validated_data)
+    
 
-        return user
+    def update(self, instance, validated_data):
+        validated_data['password'] = make_password(validated_data.get('password'))
+        return super(RegisterSerializer, self).update(instance, validated_data)
+
+
+class UpdateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        required=False,
+        validators=[
+            UniqueValidator(queryset=User.objects.all()),
+            lambda x: validate_length(x, MAX_USERNAME_LENGTH) 
+        ]
+    )
+    email = serializers.EmailField(
+        required=False,
+        allow_blank=True,
+    )
+    password = serializers.CharField(
+        required=False,
+        write_only=True,
+        style={'input_type': 'password'},
+        validators=[
+            lambda x: validate_length(x, MAX_PASSWORD_LENGTH)
+        ]
+    )
+
+    class Meta():
+        model = User
+        fields = ('username', 'email', 'password')
+    
+
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data.get('password'))
+        return super(UpdateSerializer, self).create(validated_data)
+    
+
+    def update(self, instance, validated_data):
+        validated_data['password'] = make_password(validated_data.get('password'))
+        print('username' in validated_data)
+        return super(UpdateSerializer, self).update(instance, validated_data)
+
