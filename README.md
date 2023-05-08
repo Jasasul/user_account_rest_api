@@ -1,7 +1,9 @@
 # REST API in Python
 
 ## About
-This is my take on a RESTful API. I used Python's framework Django.
+This is my take on a RESTful API. I used Python's framework Django.\
+Users can craete and manage their accounts by makin API requests.\
+On some routes an user must authenticate using a token provied.
 
 This project helped me to get a grasp of what a RESTful API really is. It helped me
 to understand different HTTP methods and when should I use which.
