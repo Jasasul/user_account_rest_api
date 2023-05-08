@@ -4,13 +4,11 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 
-
-MAX_USERNAME_LENGTH = 50
-MAX_EMAIL_LENGTH = 256
-MAX_PASSWORD_LENGTH = 25
+from rest_api.settings import MAX_USERNAME_LENGTH, MAX_PASSWORD_LENGTH
 
 
 def validate_length(value, length):
+    # custom method to check field's length
     if len(value) > length:
         raise serializers.ValidationError(
             f'The maximum length is {length} chars'
@@ -21,7 +19,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email')
-
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -58,7 +55,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         return super(RegisterSerializer, self).update(instance, validated_data)
 
 
-class UpdateSerializer(serializers.ModelSerializer):
+class UpdateSerializer(RegisterSerializer):
+    # unlike RegisterSerializer all fields are optional
+    # called PatchedUser in the schema
     username = serializers.CharField(
         required=False,
         validators=[
@@ -66,10 +65,7 @@ class UpdateSerializer(serializers.ModelSerializer):
             lambda x: validate_length(x, MAX_USERNAME_LENGTH) 
         ]
     )
-    email = serializers.EmailField(
-        required=False,
-        allow_blank=True,
-    )
+
     password = serializers.CharField(
         required=False,
         write_only=True,
@@ -78,19 +74,3 @@ class UpdateSerializer(serializers.ModelSerializer):
             lambda x: validate_length(x, MAX_PASSWORD_LENGTH)
         ]
     )
-
-    class Meta():
-        model = User
-        fields = ('username', 'email', 'password')
-    
-
-    def create(self, validated_data):
-        validated_data['password'] = make_password(validated_data.get('password'))
-        return super(UpdateSerializer, self).create(validated_data)
-    
-
-    def update(self, instance, validated_data):
-        validated_data['password'] = make_password(validated_data.get('password'))
-        print('username' in validated_data)
-        return super(UpdateSerializer, self).update(instance, validated_data)
-

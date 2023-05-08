@@ -130,6 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 REST_FRAMEWORK = {
+    # for demonstration
     'DEBUG': True,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -138,6 +139,7 @@ REST_FRAMEWORK = {
 }
 
 
+# swagger ui docs
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'Bearer': {
@@ -147,7 +149,21 @@ SWAGGER_SETTINGS = {
             'bearerFormat': 'Token'
         }
     },
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+
+# swagger header
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'User CRUD REST API in Python',
+    'VERSION': '3.10.6',
+    'DESCRIPTION': '<h3>AUTHENTICATION</h3>Token format: <strong>Token \<token\></strong><br/><strong>Register</strong> & <strong>Login</strong>: no authentication<br/><strong>user/me</strong>: must be an user<br/><strong>users/</strong>: must be an admin'
+}
+
+
+# for the main API
+BASE_URL = 'api/'
+
+# use user object field lengths specifications
+MAX_USERNAME_LENGTH = 50
+MAX_PASSWORD_LENGTH = 25

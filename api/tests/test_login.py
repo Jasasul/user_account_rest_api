@@ -1,13 +1,12 @@
 import pytest
 
 
-from .conftest import get_token, register_user
+from .conftest import get_token
 
 
 @pytest.mark.django_db
 def test_login(test_client, user_token):
-    token = get_token(test_client, user_token['user'])
-    assert(token)
+    assert(get_token(test_client, user_token['user']))
 
 
 def test_login_no_username(test_client, user):

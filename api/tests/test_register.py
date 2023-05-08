@@ -1,10 +1,8 @@
 import pytest
-from django.contrib.auth.models import User
 
-from . import REGISTER_URL
 from .conftest import new_user_json, register_assert
 
-from api.serializers import MAX_USERNAME_LENGTH, MAX_EMAIL_LENGTH, MAX_PASSWORD_LENGTH
+from rest_api.settings import MAX_USERNAME_LENGTH, MAX_PASSWORD_LENGTH
 
 @pytest.mark.django_db
 def test_register(test_client, users, user):
