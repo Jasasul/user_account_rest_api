@@ -1,4 +1,4 @@
-# REST API in Python
+# User account management REST API in Python
 
 ## About
 This is my take on a RESTful API. I used Python's framework Django.\
